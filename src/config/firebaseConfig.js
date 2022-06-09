@@ -1,10 +1,12 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyC7UBiMCQFzm80DkTtdw0WW1eLXX0paS5w",
-  authDomain: "intergating-firebase.firebaseapp.com",
-  projectId: "intergating-firebase",
-  storageBucket: "intergating-firebase.appspot.com",
-  messagingSenderId: "435456931987",
-  appId: "1:435456931987:web:5d992e7c0a35e2cd06f566"
+  apiKey: "AIzaSyDAfgH7sIJZJpFZPplP4tlEqmOp_d5zhgM",
+  authDomain: "auth-react-ba19b.firebaseapp.com",
+  databaseURL: "https://auth-react-ba19b-default-rtdb.firebaseio.com",
+  projectId: "auth-react-ba19b",
+  storageBucket: "auth-react-ba19b.appspot.com",
+  messagingSenderId: "442337376656",
+  appId: "1:442337376656:web:1639f1c7769428b937db15",
+  measurementId: "G-8F0WNDJSW3"
 };
 
 export default firebaseConfig;
