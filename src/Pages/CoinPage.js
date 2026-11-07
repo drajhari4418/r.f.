@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ReactHtmlParser from "react-html-parser";
 import CoinInfo from "../components/CoinInfo";
-import { SingleCoin } from "../config/api";
+import { SingleCoin, coinGeckoRequestConfig } from "../config/api";
 import { numberWithCommas } from "../components/CoinsTable";
 import { CryptoState } from "../CryptoContext";
 import { doc, setDoc } from "firebase/firestore";
@@ -18,13 +18,23 @@ import { db } from "../firebase";
 const CoinPage = () => {
   const { id } = useParams();
   const [coin, setCoin] = useState();
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   const { currency, symbol, user, setAlert, watchlist } = CryptoState();
 
   const fetchCoin = async () => {
-    const { data } = await axios.get(SingleCoin(id));
-
-    setCoin(data);
+    setLoading(true);
+    setLoadError(false);
+    try {
+      const { data } = await axios.get(SingleCoin(id), coinGeckoRequestConfig);
+      setCoin(data);
+    } catch (error) {
+      setCoin(undefined);
+      setLoadError(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inWatchlist = watchlist.includes(coin?.id);
@@ -78,7 +88,7 @@ const CoinPage = () => {
   useEffect(() => {
     fetchCoin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id]);
 
   const useStyles = makeStyles((theme) => ({
     container: {
@@ -130,7 +140,15 @@ const CoinPage = () => {
 
   const classes = useStyles();
 
-  if (!coin) return <LinearProgress style={{ backgroundColor: "gold" }} />;
+  if (loading) return <LinearProgress style={{ backgroundColor: "gold" }} />;
+
+  if (loadError || !coin) {
+    return (
+      <Typography align="center" style={{ padding: 40 }} variant="h6">
+        Coin details could not be loaded. Please return to the home page and try again.
+      </Typography>
+    );
+  }
 
   return (
     <div className={classes.container}>

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { HistoricalChart } from "../config/api";
+import { HistoricalChart, coinGeckoRequestConfig } from "../config/api";
 import { Line } from "react-chartjs-2";
 import {
   CircularProgress,
@@ -15,6 +15,7 @@ import { CryptoState } from "../CryptoContext";
 const CoinInfo = ({ coin }) => {
   const [historicData, setHistoricData] = useState();
   const [days, setDays] = useState(1);
+  const [loadError, setLoadError] = useState(false);
   const { currency } = CryptoState();
 
   const useStyles = makeStyles((theme) => ({
@@ -38,15 +39,23 @@ const CoinInfo = ({ coin }) => {
   const classes = useStyles();
 
   const fetchHistoricData = async () => {
-    const { data } = await axios.get(HistoricalChart(coin.id, days, currency));
-
-    setHistoricData(data.prices);
+    setLoadError(false);
+    setHistoricData(undefined);
+    try {
+      const { data } = await axios.get(
+        HistoricalChart(coin.id, days, currency),
+        coinGeckoRequestConfig
+      );
+      setHistoricData(data.prices);
+    } catch (error) {
+      setLoadError(true);
+    }
   };
 
   useEffect(() => {
     fetchHistoricData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [days, currency]);
+  }, [coin.id, days, currency]);
 
   const darkTheme = createTheme({
     palette: {
@@ -60,7 +69,9 @@ const CoinInfo = ({ coin }) => {
   return (
     <ThemeProvider theme={darkTheme}>
       <div className={classes.container}>
-        {!historicData ? (
+        {loadError ? (
+          <p>Price history could not be loaded. Please try another time range.</p>
+        ) : !historicData ? (
           <CircularProgress
             style={{ color: "gold" }}
             size={250}

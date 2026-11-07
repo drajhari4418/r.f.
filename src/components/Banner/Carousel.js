@@ -3,7 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import AliceCarousel from "react-alice-carousel";
 import { Link } from "react-router-dom";
-import { TrendingCoins } from "../../config/api";
+import { TrendingCoins, coinGeckoRequestConfig } from "../../config/api";
 import { CryptoState } from "../../CryptoContext";
 import { numberWithCommas } from "../CoinsTable";
 
@@ -12,9 +12,15 @@ const Carousel = () => {
   const { currency, symbol } = CryptoState();
 
   const fetchTrendingCoins = async () => {
-    const { data } = await axios.get(TrendingCoins(currency));
-
-    setTrending(data);
+    try {
+      const { data } = await axios.get(
+        TrendingCoins(currency),
+        coinGeckoRequestConfig
+      );
+      setTrending(data);
+    } catch (error) {
+      setTrending([]);
+    }
   };
 
   useEffect(() => {
@@ -44,7 +50,7 @@ const Carousel = () => {
     let profit = coin?.price_change_percentage_24h >= 0;
 
     return (
-      <Link className={classes.carouselItem} to={`/coins/${coin.id}`}>
+      <Link key={coin.id} className={classes.carouselItem} to={`/coins/${coin.id}`}>
         <img
           src={coin?.image}
           alt={coin.name}
