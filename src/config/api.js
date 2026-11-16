@@ -11,14 +11,27 @@ export const coinGeckoRequestConfig = coinGeckoApiKey
   ? { headers: { "x-cg-demo-api-key": coinGeckoApiKey } }
   : {};
 
-export const CoinList = (currency) =>
-  `${coinGeckoBaseUrl}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=100&page=1&sparkline=false`;
+export const CoinList = (currency) => {
+  const params = new URLSearchParams({
+    vs_currency: currency.toLowerCase(),
+    order: "market_cap_desc",
+    per_page: "100",
+    page: "1",
+    sparkline: "false",
+  });
+  return `${coinGeckoBaseUrl}/coins/markets?${params.toString()}`;
+};
 
 export const SingleCoin = (id) =>
-  `${coinGeckoBaseUrl}/coins/${id}`;
+  `${coinGeckoBaseUrl}/coins/${encodeURIComponent(id)}`;
 
-export const HistoricalChart = (id, days = 365, currency) =>
-  `${coinGeckoBaseUrl}/coins/${id}/market_chart?vs_currency=${currency}&days=${days}`;
+export const HistoricalChart = (id, days = 365, currency) => {
+  const params = new URLSearchParams({
+    vs_currency: currency.toLowerCase(),
+    days: String(days),
+  });
+  return `${coinGeckoBaseUrl}/coins/${encodeURIComponent(id)}/market_chart?${params.toString()}`;
+};
 
 export const TrendingCoins = (currency) =>
-  `${coinGeckoBaseUrl}/coins/markets?vs_currency=${currency}&order=gecko_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h`;
+  `${coinGeckoBaseUrl}/coins/markets?vs_currency=${currency.toLowerCase()}&order=market_cap_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h`;

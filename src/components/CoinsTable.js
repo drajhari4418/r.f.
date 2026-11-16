@@ -58,10 +58,11 @@ export default function CoinsTable() {
   });
 
   const handleSearch = () => {
+    const normalizedSearch = search.trim().toLowerCase();
     return coins.filter(
       (coin) =>
-        coin.name.toLowerCase().includes(search) ||
-        coin.symbol.toLowerCase().includes(search)
+        coin.name.toLowerCase().includes(normalizedSearch) ||
+        coin.symbol.toLowerCase().includes(normalizedSearch)
     );
   };
 
@@ -78,7 +79,11 @@ export default function CoinsTable() {
           label="Search For a Crypto Currency.."
           variant="outlined"
           style={{ marginBottom: 20, width: "100%" }}
-          onChange={(e) => setSearch(e.target.value)}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
         />
         <TableContainer component={Paper}>
           {loading ? (
@@ -175,7 +180,7 @@ export default function CoinsTable() {
 
         {/* Comes from @material-ui/lab */}
         <Pagination
-          count={parseInt((handleSearch()?.length / 10).toFixed(0))}
+          count={Math.ceil(handleSearch().length / 10)}
           style={{
             padding: 20,
             width: "100%",

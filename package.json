@@ -23,8 +23,8 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "node --openssl-legacy-provider ./node_modules/react-scripts/scripts/start.js",
+    "build": "node --openssl-legacy-provider ./node_modules/react-scripts/scripts/build.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-local": "HOST='.local' node scripts/start.js"

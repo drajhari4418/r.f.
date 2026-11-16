@@ -41,7 +41,7 @@ function Banner() {
               fontFamily: "Montserrat",
             }}
           >
-            Clone Crypto
+            Crypto Add
           </Typography>
           <Typography
             variant="subtitle2"
@@ -51,7 +51,7 @@ function Banner() {
               fontFamily: "Montserrat",
             }}
           >
-            Get all the Info regarding your favorite Crypto Currency
+            Track crypto markets, explore price history, and save a paper portfolio.
           </Typography>
         </div>
         <Carousel />

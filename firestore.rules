@@ -1,0 +1,47 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /watchlist/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['coins'])
+        && request.resource.data.coins is list
+        && request.resource.data.coins.size() <= 200;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /cart/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['items'])
+        && request.resource.data.items is list
+        && request.resource.data.items.size() <= 50;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /coinReviews/{coinId}/reviews/{reviewId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly([
+          'userId', 'displayName', 'rating', 'comment', 'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'userId', 'displayName', 'rating', 'comment', 'createdAt'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() > 0
+        && request.resource.data.comment.size() <= 500
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 120
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+  }
+}

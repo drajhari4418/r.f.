@@ -56,25 +56,27 @@ export default function AuthModal() {
 
   const googleProvider = new GoogleAuthProvider();
 
-  const signInWithGoogle = () => {
-    signInWithPopup(auth, googleProvider)
-      .then((res) => {
-        setAlert({
-          open: true,
-          message: `Sign Up Successful. Welcome ${res.user.email}`,
-          type: "success",
-        });
-
-        handleClose();
-      })
-      .catch((error) => {
-        setAlert({
-          open: true,
-          message: error.message,
-          type: "error",
-        });
-        return;
+  const signInWithGoogle = async () => {
+    try {
+      const res = await signInWithPopup(auth, googleProvider);
+      setAlert({
+        open: true,
+        message: `Welcome, ${res.user.email}`,
+        type: "success",
       });
+      handleClose();
+    } catch (error) {
+      const message = error.code === "auth/operation-not-allowed"
+        ? "Google sign-in is disabled in Firebase Authentication settings."
+        : error.code === "auth/unauthorized-domain"
+          ? "Add this site domain to Firebase Authentication's authorized domains."
+          : "Google sign-in failed. Please try again.";
+      setAlert({
+        open: true,
+        message,
+        type: "error",
+      });
+    }
   };
 
   return (

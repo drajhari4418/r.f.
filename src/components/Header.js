@@ -1,5 +1,6 @@
 import {
   AppBar,
+  Button,
   Container,
   MenuItem,
   Select,
@@ -64,6 +65,16 @@ function Header() {
               <MenuItem value={"USD"}>USD</MenuItem>
               <MenuItem value={"INR"}>INR</MenuItem>
             </Select>
+
+            {process.env.REACT_APP_SUPPORT_EMAIL && (
+              <Button
+                component="a"
+                href={`mailto:${process.env.REACT_APP_SUPPORT_EMAIL}`}
+                style={{ color: "#EEBC1D", marginLeft: 8 }}
+              >
+                Contact
+              </Button>
+            )}
 
             {user ? <UserSidebar /> : <AuthModal />}
           </Toolbar>

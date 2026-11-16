@@ -14,6 +14,7 @@ import { numberWithCommas } from "../components/CoinsTable";
 import { CryptoState } from "../CryptoContext";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import CoinReviews from "../components/CoinReviews";
 
 const CoinPage = () => {
   const { id } = useParams();
@@ -21,7 +22,7 @@ const CoinPage = () => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
-  const { currency, symbol, user, setAlert, watchlist } = CryptoState();
+  const { currency, symbol, user, setAlert, watchlist, addToCart } = CryptoState();
 
   const fetchCoin = async () => {
     setLoading(true);
@@ -151,6 +152,7 @@ const CoinPage = () => {
   }
 
   return (
+    <>
     <div className={classes.container}>
       <div className={classes.sidebar}>
         <img
@@ -163,7 +165,7 @@ const CoinPage = () => {
           {coin?.name}
         </Typography>
         <Typography variant="subtitle1" className={classes.description}>
-          {ReactHtmlParser(coin?.description.en.split(". ")[0])}.
+              {ReactHtmlParser((coin?.description?.en || "No description is available.").split(". ")[0])}.
         </Typography>
         <div className={classes.marketData}>
           <span style={{ display: "flex" }}>
@@ -218,22 +220,46 @@ const CoinPage = () => {
             </Typography>
           </span>
           {user && (
-            <Button
-              variant="outlined"
-              style={{
-                width: "100%",
-                height: 40,
-                backgroundColor: inWatchlist ? "#ff0000" : "#EEBC1D",
-              }}
-              onClick={inWatchlist ? removeFromWatchlist : addToWatchlist}
-            >
-              {inWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
-            </Button>
+            <>
+              <Button
+                variant="outlined"
+                style={{
+                  width: "100%",
+                  height: 40,
+                  marginBottom: 10,
+                  backgroundColor: inWatchlist ? "#ff0000" : "#EEBC1D",
+                }}
+                onClick={inWatchlist ? removeFromWatchlist : addToWatchlist}
+              >
+                {inWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+              </Button>
+              <Button
+                variant="outlined"
+                style={{ width: "100%", height: 40, backgroundColor: "#EEBC1D" }}
+                onClick={() => addToCart(coin)}
+              >
+                Add to paper portfolio cart
+              </Button>
+            </>
           )}
+          {!user && (
+            <Typography style={{ marginTop: 10, color: "darkgrey" }}>
+              Sign in to save this coin to your watchlist or paper portfolio cart.
+            </Typography>
+          )}
+          <Button
+            component="a"
+            href={`mailto:?subject=${encodeURIComponent(`Crypto Add: ${coin.name}`)}&body=${encodeURIComponent(`Explore ${coin.name} (${coin.symbol.toUpperCase()}) on Crypto Add: ${window.location.origin}/coins/${coin.id}`)}`}
+            style={{ width: "100%", marginTop: 8, color: "#EEBC1D" }}
+          >
+            Share by email
+          </Button>
         </div>
       </div>
       <CoinInfo coin={coin} />
     </div>
+    <CoinReviews coin={coin} />
+    </>
   );
 };
 
