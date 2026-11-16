@@ -112,7 +112,9 @@ export default function CoinsTable() {
                 {handleSearch()
                   .slice((page - 1) * 10, (page - 1) * 10 + 10)
                   .map((row) => {
-                    const profit = row.price_change_percentage_24h > 0;
+                    const priceChange = Number(row.price_change_percentage_24h);
+                    const hasPriceChange = Number.isFinite(priceChange);
+                    const profit = hasPriceChange && priceChange > 0;
                     return (
                       <TableRow
                         onClick={() => history.push(`/coins/${row.id}`)}
@@ -156,12 +158,17 @@ export default function CoinsTable() {
                         <TableCell
                           align="right"
                           style={{
-                            color: profit > 0 ? "rgb(14, 203, 129)" : "red",
+                            color: profit
+                              ? "rgb(14, 203, 129)"
+                              : hasPriceChange
+                              ? "red"
+                              : "darkgrey",
                             fontWeight: 500,
                           }}
                         >
-                          {profit && "+"}
-                          {row.price_change_percentage_24h.toFixed(2)}%
+                          {hasPriceChange
+                            ? `${profit ? "+" : ""}${priceChange.toFixed(2)}%`
+                            : "N/A"}
                         </TableCell>
                         <TableCell align="right">
                           {symbol}{" "}
